@@ -1,1 +1,82 @@
-hola
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>PSI — Pla de suport individualitzat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar">
+  <h1>Pla de suport individualitzat<span class="sub" id="centreName"></span></h1>
+  <span id="who" class="who"></span>
+  <span id="status" aria-live="polite"></span>
+  <button class="btn" id="btnImport">Importa alumnat</button>
+  <button class="btn" id="btnSettings">Centre i còpies</button>
+  <button class="btn primary" id="btnPrint">Imprimeix / desa en PDF</button>
+  <button class="btn ghost" id="btnLogout" hidden>Surt</button>
+</header>
+<div id="demoBanner" class="banner" hidden>Mode demostració: les dades es desen només en aquest navegador. Configura Firebase per treballar amb dades reals.</div>
+
+<div class="app">
+  <aside aria-label="Llista d'alumnat">
+    <input id="q" type="search" placeholder="Cerca per nom…" aria-label="Cerca alumne/a">
+    <select id="fCurs" aria-label="Filtra per curs"><option value="">Tots els cursos</option></select>
+    <div id="roster"></div>
+    <div class="legend"><span class="dot" style="display:inline-block;vertical-align:-2px"></span> sense iniciar &nbsp; <span class="dot p1" style="display:inline-block;vertical-align:-2px"></span> en curs &nbsp; <span class="dot p2" style="display:inline-block;vertical-align:-2px"></span> complet</div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<div class="pd" id="pd"></div>
+
+<dialog id="dImport">
+  <h3>Importa l'alumnat</h3>
+  <p class="hint">Puja un CSV o enganxa directament les files d'un full de càlcul (Excel, Google Sheets). Capçaleres reconegudes: <b>nom, cognoms, data de naixement, curs, grup, tutor/a</b>. Si tornes a importar, els alumnes ja existents s'actualitzen sense perdre el seu pla.</p>
+  <p><input type="file" id="fileCsv" accept=".csv,.tsv,.txt"></p>
+  <textarea id="pasteCsv" placeholder="Cognoms;Nom;Data naixement;Curs;Grup;Tutor&#10;Garcia Puig;Marc;12/03/2011;3r ESO;3B;Anna Vila"></textarea>
+  <div class="actions">
+    <button class="btn ghost" id="btnTemplate">Descarrega plantilla CSV</button>
+    <button class="btn" id="btnSample">Carrega alumnat fictici</button>
+    <button class="btn" id="cancelImport">Tanca</button>
+    <button class="btn primary" id="doImport">Importa</button>
+  </div>
+</dialog>
+
+<dialog id="dSettings">
+  <h3>Dades del centre</h3>
+  <div class="grid">
+    <label class="f">Centre<input data-s="centre"></label>
+    <label class="f">Curs acadèmic<input data-s="curs" placeholder="26-27"></label>
+    <label class="f">Director/a<input data-s="director"></label>
+    <label class="f">Coordinador/a del pla (per defecte)<input data-s="coordinador"></label>
+  </div>
+  <div class="local-only">
+  <h3 style="margin-top:20px">Còpia de seguretat</h3>
+  <p class="hint">En mode demostració les dades es desen només al navegador. Fes servir dades fictícies.</p>
+  <div class="actions" style="justify-content:flex-start">
+    <button class="btn" id="btnExport">Exporta còpia (JSON)</button>
+    <label class="btn" style="cursor:pointer">Restaura còpia<input type="file" id="fileRestore" accept=".json" hidden></label>
+    <button class="btn" id="btnWipe">Esborra-ho tot</button>
+  </div>
+  </div>
+  <div class="actions"><button class="btn primary" id="closeSettings">Desa i tanca</button></div>
+</dialog>
+
+<div id="toast" role="status"></div>
+<div id="login" class="login" hidden>
+  <div class="login-box">
+    <h2>Pla de suport individualitzat</h2>
+    <p>Accedeix amb el compte del centre per veure o elaborar els plans de l'alumnat.</p>
+    <button class="btn primary" id="btnLogin">Entra amb Google</button>
+    <p id="loginMsg" class="login-msg" role="alert"></p>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

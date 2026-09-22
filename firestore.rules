@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function staffDoc() {
+      return get(/databases/$(database)/documents/staff/$(request.auth.token.email.lower()));
+    }
+    function isStaff() {
+      return signedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.token.email.lower()));
+    }
+    // Poden editar: orientació i administració
+    function isEditor() {
+      return isStaff() && staffDoc().data.role in ['admin', 'orientador'];
+    }
+
+    // Cada persona només pot llegir la seva pròpia fitxa d'accés.
+    // Les altes i els rols es gestionen des de la consola de Firebase.
+    match /staff/{email} {
+      allow read: if signedIn() && request.auth.token.email.lower() == email;
+      allow write: if false;
+    }
+
+    match /settings/{id} {
+      allow read: if isStaff();
+      allow write: if isEditor();
+    }
+
+    match /students/{id} {
+      allow read: if isStaff();
+      allow write: if isEditor();
+    }
+
+    // Mesures del pla: tot el professorat (només lectura)
+    match /plans/{id} {
+      allow read: if isStaff();
+      allow write: if isEditor();
+    }
+
+    // Informe i conversa amb l'alumne/a: només orientació
+    match /plansPrivate/{id} {
+      allow read, write: if isEditor();
+    }
+  }
+}
